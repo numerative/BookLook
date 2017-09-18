@@ -3,6 +3,7 @@ package com.example.android.booklook;
 import android.app.LoaderManager;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Loader;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -22,13 +23,12 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
     private static final int BOOK_LOADER_ID = 1;
 
 
-
     /**
      * URL for earthquake data from the USGS dataset
      */
-  //  private static final String GOOGLE_BOOKS_REQUEST_URL =
-  //         "https://www.googleapis.com/books/v1/volumes?q=harry+potter&maxResults=20";
-            String GOOGLE_BOOKS_REQUEST_URL;
+    //  private static final String GOOGLE_BOOKS_REQUEST_URL =
+    //         "https://www.googleapis.com/books/v1/volumes?q=harry+potter&maxResults=20";
+    String GOOGLE_BOOKS_REQUEST_URL = "https://www.googleapis.com/books/v1/volumes?";
 
     private BookAdapter mAdapter;
 
@@ -39,17 +39,27 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
         //Fetching the bundle from SearchBarActivity
         Bundle searchBundle = getIntent().getExtras();
         String searchQuery = searchBundle.getString("searchQuery");
+        /*String searchQuery = searchBundle.getString("searchQuery");
         searchQuery = searchQuery.replaceAll(" ","+");
         Log.v("replace", searchQuery);
 
         //Making a new string builder to produce a new URL
         StringBuilder searchUrlBuilder = new StringBuilder();
-        searchUrlBuilder.append("https://www.googleapis.com/books/v1/volumes?q=" + searchQuery +
+        searchUrlBuilder.append("https://www.googleapis.com/books/v1/volumes?" + searchQuery +
                 "&maxResults=20" );
         Log.v("URL", String.valueOf(searchUrlBuilder));
         //GOOG...URL assumes value of searchUrlBuilder
-        GOOGLE_BOOKS_REQUEST_URL = String.valueOf(searchUrlBuilder);
+        GOOGLE_BOOKS_REQUEST_URL = String.valueOf(searchUrlBuilder);*/
 
+        //Building URL via a URI Builder
+        Uri baseUri = Uri.parse(GOOGLE_BOOKS_REQUEST_URL);
+        Uri.Builder uriBuilder = baseUri.buildUpon();
+
+        uriBuilder.appendQueryParameter("q", searchBundle.getString("searchQuery"));
+        uriBuilder.appendQueryParameter("maxResults", "20");
+
+        GOOGLE_BOOKS_REQUEST_URL = uriBuilder.toString();
+        Log.v("URI", GOOGLE_BOOKS_REQUEST_URL);
 
 
         // Find a reference to the {@link ListView} in the layout
