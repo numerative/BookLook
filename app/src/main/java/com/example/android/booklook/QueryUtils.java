@@ -1,5 +1,6 @@
 package com.example.android.booklook;
 
+import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -18,7 +19,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.R.attr.author;
+import static android.graphics.BitmapFactory.decodeStream;
 import static com.example.android.booklook.MainActivity.LOG_TAG;
 
 /**
@@ -89,6 +90,7 @@ public final class QueryUtils {
                 ArrayList<String> authors = new ArrayList<>();
                 String pageCount = null;
                 String averageRating = null;
+                Bitmap smallThumbnail = null;
 
                 bookRecord = bookArray.getJSONObject(i);
                 volumeInfo = bookRecord.getJSONObject("volumeInfo");
@@ -121,10 +123,16 @@ public final class QueryUtils {
                     pageCount = volumeInfo.getString("pageCount");
                 }
 
-
+                if (volumeInfo.has("imageLinks")) {
+                    JSONObject imageLinks = volumeInfo.getJSONObject("imageLinks");
+                    if (imageLinks.has("smallThumbnail")) {
+                        smallThumbnail = fetchThumbnail(imageLinks.getString("smallThumbnail"));
+                    }
+                }
 
                 //Create a new object with the title, pagecount and average rating
-                Book book = new Book(title, subTitle, authors, pageCount, averageRating);
+                Book book = new Book(title, subTitle, authors, pageCount, averageRating,
+                        smallThumbnail);
                 //Add the new Book to the search result array
                 books.add(book);
             }
@@ -210,5 +218,66 @@ public final class QueryUtils {
             }
         }
         return output.toString();
+    }
+
+    /*
+     * For SmallThumbnail Loading
+     */
+    public static Bitmap fetchThumbnail(String requestUrl) {
+        //Create URL object
+        URL url = createUrl(requestUrl);
+
+        //Perform HTTP request to the URL and receive a JSON response back
+        Bitmap smallThumbnail = null;
+        try {
+            smallThumbnail = makeHttpRequestForBitmap(url);
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "Problem making the HTTP request.", e);
+        }
+        Log.v("SmallThumbnail", String.valueOf(smallThumbnail));
+        return smallThumbnail;
+    }
+
+    //Method that makes HTTP request and returns a Bitmap as the response
+    private static Bitmap makeHttpRequestForBitmap(URL url) throws IOException {
+        Bitmap bitmapResponse=null;
+
+        //If the URL is null, then return early.
+        if (url == null) {
+            return null;
+        }
+
+        HttpURLConnection urlConnection = null;
+        InputStream inputStream = null;
+        try {
+            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setReadTimeout(10000 /* milliseconds */);
+            urlConnection.setConnectTimeout(15000 /* milliseconds */);
+            urlConnection.setRequestMethod("GET");
+            urlConnection.connect();
+
+            // If the request was successful (response code 200),
+            // then read the input stream and parse the response.
+            if (urlConnection.getResponseCode() == 200) {
+                inputStream = urlConnection.getInputStream();
+                bitmapResponse = decodeStream(inputStream);
+
+            } else {
+                Log.e(LOG_TAG, "Error response code: " + urlConnection.getResponseCode());
+            }
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "Problem retrieving the earthquake JSON results.", e);
+        } finally {
+            if (urlConnection != null) {
+                urlConnection.disconnect();
+            }
+            if (inputStream != null) {
+                // Closing the input stream could throw an IOException, which is why
+                // the makeHttpRequest(URL url) method signature specifies than an IOException
+                // could be thrown.
+                inputStream.close();
+            }
+        }
+        return bitmapResponse;
     }
 }

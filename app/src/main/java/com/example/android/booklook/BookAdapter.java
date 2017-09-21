@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -81,6 +82,15 @@ public class BookAdapter extends ArrayAdapter<Book> {
 
         //Get the Title and set it to a page_count textview
         averageRatingTextView.setText(currentBook.getAverageRating());
+
+        if (currentBook.getSmallThumbnail() != null) {
+            //Find the ImageView
+            ImageView smallThumbnailImageView = (ImageView) listItemView.findViewById(R.id.small_thumbnail);
+
+            //Setting the image to the image view
+            smallThumbnailImageView.setImageBitmap(currentBook.getSmallThumbnail());
+        }
+
 
         return listItemView;
     }

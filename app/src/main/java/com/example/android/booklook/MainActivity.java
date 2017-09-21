@@ -7,7 +7,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -92,6 +94,8 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
     public void onLoadFinished(Loader<List<Book>> loader, List<Book> books) {
         //Clear the adapter of previous data
         mAdapter.clear();
+        ProgressBar loadingCircle = (ProgressBar) findViewById(R.id.loading_spinner);
+        loadingCircle.setVisibility(View.GONE);
 
         if (books != null && !books.isEmpty()) {
             mAdapter.addAll(books);

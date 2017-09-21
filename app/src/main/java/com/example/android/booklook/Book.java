@@ -1,5 +1,7 @@
 package com.example.android.booklook;
 
+import android.graphics.Bitmap;
+
 import java.util.ArrayList;
 
 /**
@@ -18,12 +20,16 @@ public class Book {
 
     private String mPageCount;
 
-    public Book (String title, String subTitle, ArrayList<String> authors, String pageCount, String averageRating) {
+    private Bitmap mSmallThumbnail;
+
+    public Book (String title, String subTitle, ArrayList<String> authors, String pageCount,
+                 String averageRating, Bitmap smallThumbnail) {
         mTitle = title;
         mSubTitle = subTitle;
         mAuthors = authors;
         mAverageRating = averageRating;
         mPageCount = pageCount;
+        mSmallThumbnail = smallThumbnail;
     }
 
     //Get Title of the Book
@@ -45,5 +51,9 @@ public class Book {
 
     public String getPageCount() {
         return mPageCount;
+    }
+
+    public Bitmap getSmallThumbnail() {
+        return mSmallThumbnail;
     }
 }
