@@ -41,18 +41,6 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
         //Fetching the bundle from SearchBarActivity
         Bundle searchBundle = getIntent().getExtras();
         String searchQuery = searchBundle.getString("searchQuery");
-        /*String searchQuery = searchBundle.getString("searchQuery");
-        searchQuery = searchQuery.replaceAll(" ","+");
-        Log.v("replace", searchQuery);
-
-        //Making a new string builder to produce a new URL
-        StringBuilder searchUrlBuilder = new StringBuilder();
-        searchUrlBuilder.append("https://www.googleapis.com/books/v1/volumes?" + searchQuery +
-                "&maxResults=20" );
-        Log.v("URL", String.valueOf(searchUrlBuilder));
-        //GOOG...URL assumes value of searchUrlBuilder
-        GOOGLE_BOOKS_REQUEST_URL = String.valueOf(searchUrlBuilder);*/
-
         //Building URL via a URI Builder
         Uri baseUri = Uri.parse(GOOGLE_BOOKS_REQUEST_URL);
         Uri.Builder uriBuilder = baseUri.buildUpon();
